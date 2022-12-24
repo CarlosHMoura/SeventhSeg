@@ -9,5 +9,5 @@ public interface IMovieRepository
     Task<Movie> GetByIdAsync(string id);
     Task<Movie> CreateAsync(Movie movie);
     Task<Movie> UpdateAsync(Movie movie);
-    Task<Movie> RemoveAsync(Movie movie);T
+    Task<Movie> RemoveAsync(Movie movie);
 }
