@@ -11,12 +11,12 @@ public sealed class Movie : Entity
     public Guid ServerId { get; set; }
     public Server? Server { get; set; }
 
-    public Movie(string description, string fileName, string pathFile, int sizeInBytes, string serverId)
+    public Movie(string description, string fileName, string pathFile, int sizeInBytes, Guid serverId)
     {
         ValidateDomain(description, fileName, pathFile, sizeInBytes, serverId);
     }
 
-    public Movie(string id, string description, string fileName, string pathFile, int sizeInBytes, string serverId)
+    public Movie(string id, string description, string fileName, string pathFile, int sizeInBytes, Guid serverId)
     {
         Guid guidId;
 
@@ -26,7 +26,7 @@ public sealed class Movie : Entity
         ValidateDomain(description, fileName, pathFile, sizeInBytes, serverId);
     }
 
-    private void ValidateDomain(string description, string fileName, string pathFile, int sizeInBytes, string serverId)
+    private void ValidateDomain(string description, string fileName, string pathFile, int sizeInBytes, Guid serverId)
     {
         DomainExceptionValidation.When(string.IsNullOrEmpty(description),
             "Invalid name. Name is required");
@@ -48,14 +48,11 @@ public sealed class Movie : Entity
 
         DomainExceptionValidation.When(sizeInBytes < 0, "Invalid size value");
 
-        Guid serverGuidId;
-
-        DomainExceptionValidation.When(!Guid.TryParse(serverId, out serverGuidId), "Invalid server id value.");
 
         Description = description;
         FileName = fileName;
         PathFile = pathFile;
         SizeInBytes = sizeInBytes;
-        ServerId = serverGuidId;
+        ServerId = serverId;
     }
 }
