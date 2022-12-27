@@ -42,8 +42,11 @@ public class ServerService : IServerService
     public async Task<ServerDTO> RemoveAsync(string id)
     {
         Guid guidId = Guid.Parse(id);
-
+               
         var serverEntity = _serverRepository.GetByIdAsync(guidId).Result;
+
+        if (serverEntity == null) return null;
+
         await _serverRepository.RemoveAsync(serverEntity);
 
         return _mapper.Map<ServerDTO>(serverEntity);

@@ -12,6 +12,7 @@ namespace SeventhSeg.Application.DTOs;
 
 public class ServerDTO
 {
+    [JsonIgnore]
     public Guid Id { get; set; }
 
     [Required(ErrorMessage = "The Name is Required")]

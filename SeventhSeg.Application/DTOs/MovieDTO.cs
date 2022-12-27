@@ -12,6 +12,7 @@ namespace SeventhSeg.Application.DTOs;
 
 public class MovieDTO
 {
+    [JsonIgnore]
     public Guid Id { get; set; }
 
     [Required(ErrorMessage = "The Description is Required")]
