@@ -13,13 +13,14 @@ namespace SeventhSeg.Application.DTOs;
 
 public class RecyclerDTO
 {
+    [JsonIgnore]
     public Guid Id { get; set; }
 
-    [Required(ErrorMessage = "The Status is Required")]
+    [JsonIgnore]
     [DisplayName("Status")]
     public RecyclerStatusEnum Status { get; set; }
 
-    [Required(ErrorMessage = "The Days is Required")]
+    [JsonIgnore]
     [DisplayName("Days")]
     public int Days { get; set; }
 

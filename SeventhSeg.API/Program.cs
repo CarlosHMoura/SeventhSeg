@@ -32,5 +32,6 @@ app.UseHttpsRedirection();
 
 app.MapServerEndpoints();
 app.MapMovieEndpoints();
+app.MapRecyclerEndpoints();
 
 app.Run();

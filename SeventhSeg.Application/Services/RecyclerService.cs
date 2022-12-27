@@ -2,6 +2,7 @@
 using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
 using SeventhSeg.Domain.Entities;
+using SeventhSeg.Domain.Enums;
 using SeventhSeg.Domain.Interfaces;
 
 namespace SeventhSeg.Application.Services;
@@ -10,19 +11,40 @@ public class RecyclerService : IRecyclerService
 {
     private IRecyclerRepository _recyclerRepository;
     private readonly IMapper _mapper;
+    private IMovieService _movieService;
 
-    public RecyclerService(IRecyclerRepository recyclerRepository, IMapper mapper)
+    public RecyclerService(IRecyclerRepository recyclerRepository, IMapper mapper, IMovieService movieService)
     {
         _recyclerRepository = recyclerRepository;
         _mapper = mapper;
+        _movieService = movieService;
     }
 
-    public async Task<RecyclerDTO> CreateAsync(RecyclerDTO recycler)
+    public async Task<RecyclerDTO> CreateAsync(int days)
     {
+        var isRunning = await _recyclerRepository.GetRecyclerRunningAsync();
+
+        if (isRunning != null) return null;
+
+        RecyclerDTO recycler = new RecyclerDTO()
+        {
+            Days = days,
+            Status = RecyclerStatusEnum.Not_Running
+        };
+
         var recyclerEntity = _mapper.Map<Recycler>(recycler);
         await _recyclerRepository.CreateAsync(recyclerEntity);
         recycler.Id = recyclerEntity.Id;
         return recycler;
+    }
+
+    public async Task<RecyclerDTO> GetRecyclerStatusAsync()
+    {
+        var recyclerEntity = await _recyclerRepository.GetRecyclerStatusAsync();
+
+        if (recyclerEntity == null) return null;
+
+        return _mapper.Map<RecyclerDTO>(recyclerEntity);
     }
 
     public async Task<RecyclerDTO> GetByIdAsync(string id)
@@ -57,6 +79,34 @@ public class RecyclerService : IRecyclerService
         var recyclerEntity = _mapper.Map<Recycler>(recycler);
         await _recyclerRepository.UpdateAsync(recyclerEntity);
         return recycler;
+    }
+
+    public async Task ExecuteRecyclerTask(RecyclerDTO recycler)
+    {
+        var movies = await _movieService.GetOldMoviesByDaysAsync(recycler.Days);
+
+        if (movies == null) 
+        {
+            recycler.Status = RecyclerStatusEnum.Finished;
+
+            await UpdateAsync(recycler);
+            return;
+        }
+
+        recycler.Status = RecyclerStatusEnum.Running;
+
+        await UpdateAsync(recycler);
+
+        Task.Delay(100000).Wait();
+
+        foreach (var movie in movies)
+        {
+            await _movieService.RemoveAsync(movie.Id.ToString());
+        }
+
+        recycler.Status = RecyclerStatusEnum.Finished;
+
+        await UpdateAsync(recycler);
     }
 
 }

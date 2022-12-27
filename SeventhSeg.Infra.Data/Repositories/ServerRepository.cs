@@ -23,12 +23,12 @@ public class ServerRepository : IServerRepository
 
     public async Task<Server> GetByIdAsync(Guid id)
     {
-        return await _serverContext.Servers.Include(x => x.Movies).SingleOrDefaultAsync(s => s.Id == id);
+        return await _serverContext.Servers.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<IEnumerable<Server>> GetServersAsync()
     {
-        return await _serverContext.Servers.ToListAsync();
+        return await _serverContext.Servers.AsNoTracking().ToListAsync();
     }
 
     public async Task<Server> RemoveAsync(Server server)
@@ -43,6 +43,7 @@ public class ServerRepository : IServerRepository
         server.UpdatedDate = DateTime.Now;
         _serverContext.Update(server);
         await _serverContext.SaveChangesAsync();
+        _serverContext.Entry(server).State = EntityState.Detached;
         return server;
     }
 }

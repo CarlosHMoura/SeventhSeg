@@ -22,22 +22,27 @@ public class MovieRepository : IMovieRepository
 
     public async Task<Movie> GetByIdAsync(Guid id)
     {
-        return await _movieContext.Movies.Include(x => x.Server).SingleOrDefaultAsync(s => s.Id == id);
+        return await _movieContext.Movies.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id);
     }
     public async Task<Movie> GetByIdAsync(Guid serverId, Guid movieId)
     {
-        return await _movieContext.Movies.Include(x => x.Server)
+        return await _movieContext.Movies.AsNoTracking()
             .SingleOrDefaultAsync(s => s.ServerId == serverId && s.Id == movieId);
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
     {
-        return await _movieContext.Movies.ToListAsync();
+        return await _movieContext.Movies.AsNoTracking().ToListAsync();
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesByServerIdAsync(Guid serverId)
     {
-        return await _movieContext.Movies.Where(x => x.ServerId == serverId).ToListAsync();
+        return await _movieContext.Movies.Where(x => x.ServerId == serverId).AsNoTracking().ToListAsync();
+    }
+
+    public async Task<IEnumerable<Movie>> GetOldMoviesByDaysAsync(int days)
+    {
+        return await _movieContext.Movies.Where(x => x.CreatedDate >= DateTime.Now.AddDays(-days)).AsNoTracking().ToListAsync();
     }
 
     public async Task<Movie> RemoveAsync(Movie movie)
@@ -53,6 +58,7 @@ public class MovieRepository : IMovieRepository
         movie.UpdatedDate = DateTime.Now;
         _movieContext.Update(movie);
         await _movieContext.SaveChangesAsync();
+        _movieContext.Entry(movie).State = EntityState.Detached;
         return movie;
     }
 }

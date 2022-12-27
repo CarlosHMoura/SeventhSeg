@@ -9,4 +9,6 @@ public interface IRecyclerRepository
     Task<Recycler> CreateAsync(Recycler movie);
     Task<Recycler> UpdateAsync(Recycler movie);
     Task<Recycler> RemoveAsync(Recycler movie);
+    Task<Recycler> GetRecyclerRunningAsync();
+    Task<Recycler> GetRecyclerStatusAsync();
 }

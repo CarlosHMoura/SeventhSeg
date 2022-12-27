@@ -104,6 +104,15 @@ public class MovieService : IMovieService
         return _mapper.Map<IEnumerable<MovieDTO>>(moviesEntity);
     }
 
+    public async Task<IEnumerable<MovieDTO>> GetOldMoviesByDaysAsync(int days)
+    {
+        var moviesEntity = await _movieRepository.GetOldMoviesByDaysAsync(days);
+
+        if (moviesEntity.Count() <= 0) return null;
+
+        return _mapper.Map<IEnumerable<MovieDTO>>(moviesEntity);
+    }
+
     public async Task<MovieDTO> RemoveAsync(string id)
     {
         Guid guidId = Guid.Parse(id);

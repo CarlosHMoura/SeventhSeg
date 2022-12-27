@@ -9,6 +9,7 @@ namespace SeventhSeg.Domain.Enums
     public enum RecyclerStatusEnum
     {
         Not_Running = 0,
-        Running = 1
+        Running = 1,
+        Finished = 2
     }
 }
