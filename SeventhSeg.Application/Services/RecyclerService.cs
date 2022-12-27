@@ -97,8 +97,6 @@ public class RecyclerService : IRecyclerService
 
         await UpdateAsync(recycler);
 
-        Task.Delay(100000).Wait();
-
         foreach (var movie in movies)
         {
             await _movieService.RemoveAsync(movie.Id.ToString());

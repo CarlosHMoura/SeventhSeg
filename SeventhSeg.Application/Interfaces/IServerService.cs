@@ -9,4 +9,5 @@ public interface IServerService
     Task<ServerDTO> CreateAsync(ServerDTO server);
     Task<ServerDTO> UpdateAsync(ServerDTO server);
     Task<ServerDTO> RemoveAsync(string id);
+    Task<bool> CheckServerAvailability(string serverId);
 }

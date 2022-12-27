@@ -3,6 +3,7 @@ using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
 using SeventhSeg.Domain.Entities;
 using SeventhSeg.Domain.Interfaces;
+using System.Net.Sockets;
 
 namespace SeventhSeg.Application.Services;
 
@@ -57,5 +58,31 @@ public class ServerService : IServerService
         var serverEntity = _mapper.Map<Server>(server);
         await _serverRepository.UpdateAsync(serverEntity);
         return server;
+    }
+
+    public async Task<bool> CheckServerAvailability(string serverId)
+    {
+        Guid guidId = Guid.Parse(serverId);
+
+        var serverEntity = await _serverRepository.GetByIdAsync(guidId);
+
+        if (serverEntity == null) return false;
+
+        bool result = false;
+
+        using (TcpClient client = new TcpClient())
+        {
+            try
+            {
+                client.Connect(serverEntity.Ip, serverEntity.Port);
+
+                result = client.Connected;
+
+                client.Close();
+            }
+            catch { }
+        }
+
+        return result;
     }
 }

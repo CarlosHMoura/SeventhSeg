@@ -2,6 +2,8 @@
 using SeventhSeg.Application.Common;
 using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
+using SeventhSeg.Domain.Entities;
+using SeventhSeg.Domain.Enums;
 
 namespace SeventhSeg.API.APIEndpoints
 {
@@ -41,6 +43,25 @@ namespace SeventhSeg.API.APIEndpoints
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("RecoverExistingServer​")
                 .WithTags("Servers");
+
+            app.MapGet("/api/servers/available/{serverId}​​", async (string serverId, IServerService service) =>
+            {
+                if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
+
+                var server = await service.CheckServerAvailability(serverId);
+
+                var result = new
+                {
+                    Status = server is true ? "server available" : "server not available"
+                };
+
+                return Results.Ok(result);
+
+            }).Produces<ServerDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .WithName("CheckServerAvailability​")
+                .WithTags("Servers");
+
 
             app.MapPost("/api/server​", async (ServerDTO server, IServerService service) =>
             {
