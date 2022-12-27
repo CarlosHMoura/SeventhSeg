@@ -43,7 +43,7 @@ public class ServerService : IServerService
     {
         Guid guidId = Guid.Parse(id);
                
-        var serverEntity = _serverRepository.GetByIdAsync(guidId).Result;
+        var serverEntity = await _serverRepository.GetByIdAsync(guidId);
 
         if (serverEntity == null) return null;
 

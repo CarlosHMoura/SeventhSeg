@@ -5,6 +5,7 @@ namespace SeventhSeg.Domain.Interfaces;
 public interface IMovieRepository
 {
     Task<IEnumerable<Movie>> GetMoviesAsync();
+    Task<Movie> GetByIdAsync(Guid serverId, Guid movieId);
     Task<IEnumerable<Movie>> GetMoviesByServerIdAsync(Guid serverId);
     Task<Movie> GetByIdAsync(Guid id);
     Task<Movie> CreateAsync(Movie movie);

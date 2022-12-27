@@ -12,7 +12,6 @@ namespace SeventhSeg.Application.DTOs;
 
 public class MovieDTO
 {
-    [JsonIgnore]
     public Guid Id { get; set; }
 
     [Required(ErrorMessage = "The Description is Required")]
@@ -20,12 +19,12 @@ public class MovieDTO
     [DisplayName("Description")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "The FileName is Required")]
+    [JsonIgnore]
     [MinLength(3)]
     [DisplayName("FileName")]
     public string FileName { get; set; }
 
-    [Required(ErrorMessage = "The PathFile is Required")]
+    [JsonIgnore]
     [MinLength(3)]
     [DisplayName("PathFile")]
     public string PathFile { get; set; }
@@ -34,7 +33,11 @@ public class MovieDTO
     [DisplayName("SizeInBytes")]
     public int SizeInBytes { get; set; }
 
-    [Required(ErrorMessage = "The ServerId is Required")]
+    [Required(ErrorMessage = "The Binary is Required")]
+    [DisplayName("Binary")]
+    public string Binary { get; set; }
+
+    [JsonIgnore]
     [DisplayName("ServerId")]
     public Guid ServerId { get; set; }
 

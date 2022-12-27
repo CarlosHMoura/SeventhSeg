@@ -37,6 +37,7 @@ namespace SeventhSeg.API.APIEndpoints
                 return Results.Ok(server);
 
             }).Produces<ServerDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("RecoverExistingServer​")
                 .WithTags("Servers");

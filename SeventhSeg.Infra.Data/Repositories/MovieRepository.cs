@@ -24,6 +24,11 @@ public class MovieRepository : IMovieRepository
     {
         return await _movieContext.Movies.Include(x => x.Server).SingleOrDefaultAsync(s => s.Id == id);
     }
+    public async Task<Movie> GetByIdAsync(Guid serverId, Guid movieId)
+    {
+        return await _movieContext.Movies.Include(x => x.Server)
+            .SingleOrDefaultAsync(s => s.ServerId == serverId && s.Id == movieId);
+    }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
     {
@@ -41,6 +46,7 @@ public class MovieRepository : IMovieRepository
         await _movieContext.SaveChangesAsync();
         return movie;
     }
+
 
     public async Task<Movie> UpdateAsync(Movie movie)
     {

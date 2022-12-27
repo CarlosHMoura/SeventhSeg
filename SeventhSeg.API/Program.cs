@@ -15,5 +15,6 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.MapServerEndpoints();
+app.MapMovieEndpoints();
 
 app.Run();
