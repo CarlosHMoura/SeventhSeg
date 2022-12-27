@@ -18,4 +18,6 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Server> Servers { get; set; }
     public DbSet<Movie> Movies { get; set; }
+    public DbSet<Recycler> Recycler { get; set; }
+    
 }

@@ -10,5 +10,6 @@ public class DomainToDTOMappingProfile : Profile
     {
         CreateMap<Server, ServerDTO>().ReverseMap();
         CreateMap<Movie, MovieDTO>().ReverseMap();
+        CreateMap<Recycler, RecyclerDTO>().ReverseMap();
     }
 }

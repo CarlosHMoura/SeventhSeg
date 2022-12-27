@@ -13,7 +13,7 @@ public sealed class Server : Entity
 
     public Server(string name, string ip, int port)
     {
-        this.Id= Guid.NewGuid();
+        Id = Guid.NewGuid();
         ValidateDomain(name,ip, port);
     }
 

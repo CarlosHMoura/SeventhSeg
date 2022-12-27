@@ -13,7 +13,7 @@ public sealed class Movie : Entity
 
     public Movie(string description, string fileName, string pathFile, int sizeInBytes, Guid serverId)
     {
-        this.Id = Guid.NewGuid();
+        Id = Guid.NewGuid();
         ValidateDomain(description, fileName, pathFile, sizeInBytes, serverId);
     }
 

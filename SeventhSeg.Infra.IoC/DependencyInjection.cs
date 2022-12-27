@@ -25,9 +25,11 @@ public static class DependencyInjection
 
         services.AddScoped<IServerRepository, ServerRepository>();
         services.AddScoped<IMovieRepository, MovieRepository>();
+        services.AddScoped<IRecyclerRepository, RecyclerRepository>();
 
         services.AddScoped<IServerService, ServerService>();
         services.AddScoped<IMovieService, MovieService>();
+        services.AddScoped<IRecyclerService, RecyclerService>();
 
         services.AddAutoMapper(typeof(DomainToDTOMappingProfile));
 

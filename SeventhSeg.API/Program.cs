@@ -19,13 +19,14 @@ builder.Services.AddHangfire(config =>
     config.UseMemoryStorage();
 });
 
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHangfireDashboard();
-app.UseHangfireServer();
 
 app.UseHttpsRedirection();
 
