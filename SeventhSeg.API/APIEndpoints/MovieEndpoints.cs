@@ -26,7 +26,7 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("ListAllMoviesOnTheServer")
                 .WithTags("Movies");
 
-            app.MapGet("/api/servers/{serverId}/videos/{videoId}​​", async (string serverId, string videoId, IMovieService service) =>
+            app.MapGet("/api/servers/{serverId}/videos/{videoId}", async (string serverId, string videoId, IMovieService service) =>
             {
                 if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID server entered is not valid.");
                 if (GuidTest.IsGUID(videoId) == false) return Results.BadRequest("GUID movie entered is not valid.");
@@ -46,7 +46,7 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("RetrieveRegistrationDataFromVideo​")
                 .WithTags("Movies");
 
-            app.MapGet("/api/servers/{serverId}/videos/{videoId}/binary​", async (string serverId, string videoId, IMovieService service) =>
+            app.MapGet("/api/servers/{serverId}/videos/{videoId}/binary", async (string serverId, string videoId, IMovieService service) =>
             {
                 if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID server entered is not valid.");
                 if (GuidTest.IsGUID(videoId) == false) return Results.BadRequest("GUID movie entered is not valid.");
@@ -66,7 +66,7 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("DownloadTheBinaryContentOfVideo​")
                 .WithTags("Movies");
 
-            app.MapPost("/api/servers/{serverId}/videos​", async (string serverId, MovieDTO movie, IMovieService service) =>
+            app.MapPost("/api/servers/{serverId}/videos", async (string serverId, MovieDTO movie, IMovieService service) =>
             {
                 Guid serverGuidId;
                 if (!Guid.TryParse(serverId, out serverGuidId)) return Results.BadRequest("GUID server entered is not valid.");
@@ -90,7 +90,7 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("AddNewVideoToSserver​")
                 .WithTags("Movies");
 
-            app.MapDelete("/api/servers/{serverId}/videos/{videoId}​", async (string serverId, string videoId, IMovieService service) =>
+            app.MapDelete("/api/servers/{serverId}/videos/{videoId}", async (string serverId, string videoId, IMovieService service) =>
             {
                 if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID server entered is not valid.");
                 if (GuidTest.IsGUID(videoId) == false) return Results.BadRequest("GUID movie entered is not valid.");
