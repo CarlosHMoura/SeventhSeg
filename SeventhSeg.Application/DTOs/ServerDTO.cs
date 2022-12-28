@@ -17,12 +17,12 @@ public class ServerDTO
     [Required(ErrorMessage = "The Name is Required")]
     [MinLength(3)]
     [DisplayName("Name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [Required(ErrorMessage = "The IP is Required")]
     [MinLength(8)]
     [DisplayName("IP")]
-    public string Ip { get; set; }
+    public string Ip { get; set; } = null!;
 
     [Required(ErrorMessage = "The Port is Required")]
     [DisplayName("Port")]

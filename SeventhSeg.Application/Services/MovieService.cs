@@ -42,7 +42,7 @@ public class MovieService : IMovieService
 
         var movieEntity = await _movieRepository.GetByIdAsync(guidId);
 
-        if (movieEntity == null) return null;
+        if (movieEntity is null) return null!;
 
         MovieDTO movieDTO = _mapper.Map<MovieDTO>(movieEntity);
 
@@ -56,7 +56,7 @@ public class MovieService : IMovieService
 
         var movieEntity = await _movieRepository.GetByIdAsync(guidServerId, guidMovieId);
 
-        if (movieEntity == null) return null;
+        if (movieEntity is null) return null!;
 
         MovieDTO movieDTO = _mapper.Map<MovieDTO>(movieEntity);
 
@@ -70,7 +70,7 @@ public class MovieService : IMovieService
 
         var movieEntity = await _movieRepository.GetByIdAsync(guidServerId, guidMovieId);
 
-        if (movieEntity == null) return null;
+        if (movieEntity is null) return null!;
 
         MovieDTO movieDTO = _mapper.Map<MovieDTO>(movieEntity);
 
@@ -88,7 +88,7 @@ public class MovieService : IMovieService
     {
         var moviesEntity = await _movieRepository.GetMoviesAsync();
 
-        if (moviesEntity.Count() <= 0) return null;
+        if (moviesEntity.Count() <= 0) return null!;
 
         return _mapper.Map<IEnumerable<MovieDTO>>(moviesEntity);
     }
@@ -99,7 +99,7 @@ public class MovieService : IMovieService
 
         var moviesEntity = await _movieRepository.GetMoviesByServerIdAsync(guidId);
 
-        if (moviesEntity.Count() <= 0) return null;
+        if (moviesEntity.Count() <= 0) return null!;
 
         return _mapper.Map<IEnumerable<MovieDTO>>(moviesEntity);
     }
@@ -108,7 +108,7 @@ public class MovieService : IMovieService
     {
         var moviesEntity = await _movieRepository.GetOldMoviesByDaysAsync(days);
 
-        if (moviesEntity.Count() <= 0) return null;
+        if (moviesEntity.Count() <= 0) return null!;
 
         return _mapper.Map<IEnumerable<MovieDTO>>(moviesEntity);
     }
@@ -119,7 +119,7 @@ public class MovieService : IMovieService
 
         var movieEntity = _movieRepository.GetByIdAsync(guidId).Result;
 
-        if (movieEntity == null) return null;
+        if (movieEntity is null) return null!;
 
         if (File.Exists(movieEntity.PathFile))
         {
@@ -127,7 +127,7 @@ public class MovieService : IMovieService
         } 
         else
         {
-            return null;
+            return null!;
         }
 
         await _movieRepository.RemoveAsync(movieEntity);
@@ -142,7 +142,7 @@ public class MovieService : IMovieService
 
         var movieEntity = await _movieRepository.GetByIdAsync(guidServerId, guidMovieId);
 
-        if (movieEntity == null) return null;
+        if (movieEntity is null) return null!;
 
         if (File.Exists(movieEntity.PathFile))
         {
@@ -150,7 +150,7 @@ public class MovieService : IMovieService
         }
         else
         {
-            return null;
+            return null!;
         }
 
         await _movieRepository.RemoveAsync(movieEntity);

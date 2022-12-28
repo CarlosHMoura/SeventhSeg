@@ -1,15 +1,17 @@
 ﻿using SeventhSeg.Domain.Validation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SeventhSeg.Domain.Entities;
 
 public sealed class Movie : Entity
 {
-    public string Description { get; private set; }
-    public string FileName { get; private set; }
-    public string PathFile { get; private set; }
+    public string Description { get; private set; } = null!;
+    public string FileName { get; private set; } = null!;
+    public string PathFile { get; private set; } = null!;
     public int SizeInBytes { get; private set; }
     public Guid ServerId { get; set; }
     public Server? Server { get; set; }
+
 
     public Movie(string description, string fileName, string pathFile, int sizeInBytes, Guid serverId)
     {

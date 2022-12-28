@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Net;
 using SeventhSeg.Application.DTOs;
 using SeventhSeg.API.Tests.Helpers;
+using Newtonsoft.Json;
 
 namespace SeventhSeg.API.Tests.APIEndpoints;
 
@@ -56,7 +57,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
         var url = $"{ServerHelpFunctions.urlGetServers}/sdafsdf-sasdf";
 
         var client = application.CreateClient();
@@ -70,7 +70,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
         var url = $"{ServerHelpFunctions.urlGetServers}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
@@ -105,7 +104,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
         var url = $"{ServerHelpFunctions.urlGetAvailableServer}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
@@ -119,7 +117,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, false);
         var url = $"{ServerHelpFunctions.urlGetAvailableServer}/1651651654-sdasf";
 
         var client = application.CreateClient();
@@ -132,8 +129,6 @@ public class ServerUnitTest1
     public async Task CreateServer_WithValidParameters_ResultNewServer()
     {
         await using var application = new SeventhSegAPIApplication();
-
-        await ServerMockData.CreateServers(application, false);
 
         var result = await ServerHelpFunctions.CreateNewServer(application);
 
@@ -150,8 +145,6 @@ public class ServerUnitTest1
 
         var server = new ServerDTO { Ip = "192.168.1.1", Port = 80 };
 
-        await ServerMockData.CreateServers(application, false);
-
         var client = application.CreateClient();
         var result = await client.PostAsJsonAsync(ServerHelpFunctions.urlCreateServer, server);
 
@@ -163,8 +156,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, false);
-
         var client = application.CreateClient();
         var result = await client.PostAsJsonAsync(ServerHelpFunctions.urlCreateServer, new { });
 
@@ -175,8 +166,6 @@ public class ServerUnitTest1
     public async Task DeleteServer_WithValidParameters_ResultNoContent()
     {
         await using var application = new SeventhSegAPIApplication();
-
-        await ServerMockData.CreateServers(application, false);
 
         var serverResult = await ServerHelpFunctions.CreateNewServer(application);
 
@@ -193,7 +182,6 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
         var url = $"{ServerHelpFunctions.urlGetServers}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
@@ -207,13 +195,95 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
         var url = $"{ServerHelpFunctions.urlGetServers}/16516165-sdsd";
 
         var client = application.CreateClient();
         var result = await client.DeleteAsync(url);
 
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    }
+
+    [Test]
+    public async Task DeleteServer_WithValidParametersAndContentMovies_ResultNoContent()
+    {
+        await using var application = new SeventhSegAPIApplication();
+
+        await MovieHelpFunctions.CreateNewMovie(application);
+
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
+
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/{serverResult.ResultList?.First().Id}";
+
+        var client = application.CreateClient();
+        var response = await client.DeleteAsync(urlId);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+    }
+
+    [Test]
+    public async Task UpdateServer_WithValidParameters_ResultNoContent()
+    {
+        await using var application = new SeventhSegAPIApplication();
+
+        var serverResult = await ServerHelpFunctions.CreateNewServer(application);
+
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/{serverResult.Result?.Id}";
+
+        ServerDTO? server = serverResult.Result;
+
+        server.Name = "Update";
+
+        var jsonString = JsonConvert.SerializeObject(server);
+        HttpContent httpContent = new StringContent(jsonString);
+        httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var client = application.CreateClient();
+        var response = await client.PutAsync(urlId, httpContent);
+
+        serverResult = await ServerHelpFunctions.GetListServer(application);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        Assert.IsTrue(serverResult.ResultList?.First().Name == "Update");
+    }
+
+    [Test]
+    public async Task UpdateServer_WithInvalidParameters_ResultNotFound()
+    {
+        await using var application = new SeventhSegAPIApplication();
+
+        var serverResult = await ServerHelpFunctions.CreateNewServer(application);
+
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/{Guid.NewGuid()}";
+
+        ServerDTO? server = serverResult.Result;
+
+        server.Name = "Update";
+
+        var jsonString = JsonConvert.SerializeObject(server);
+        HttpContent httpContent = new StringContent(jsonString);
+        httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var client = application.CreateClient();
+        var response = await client.PutAsync(urlId, httpContent);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    [Test]
+    public async Task UpdateServer_WithInvalidServerId_ResultBadRequest()
+    {
+        await using var application = new SeventhSegAPIApplication();
+
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/25254-424";
+
+        var jsonString = JsonConvert.SerializeObject(new {});
+        HttpContent httpContent = new StringContent(jsonString);
+        httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var client = application.CreateClient();
+        var response = await client.PutAsync(urlId, httpContent);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
 

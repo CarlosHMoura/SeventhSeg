@@ -5,6 +5,7 @@ using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
 using SeventhSeg.Domain.Entities;
 using SeventhSeg.Domain.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SeventhSeg.API.APIEndpoints
 {
@@ -25,11 +26,12 @@ namespace SeventhSeg.API.APIEndpoints
             }).Produces<IEnumerable<ServerDTO>>(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("ListAllServers")
-                .WithTags("Servers");
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "List all servers."));
 
             app.MapGet("/api/servers/{serverId}", async (string serverId, IServerService service) =>
             {
-                if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
+                if (GuidTest.IsGUID(serverId) is false) return Results.BadRequest("GUID entered is not valid.");
                
                 var server = await service.GetByIdAsync(serverId);
                 if (server is null)
@@ -43,17 +45,18 @@ namespace SeventhSeg.API.APIEndpoints
                 .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("RecoverExistingServer​")
-                .WithTags("Servers");
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Recover a server."));
 
             app.MapGet("/api/servers/available/{serverId}", async (string serverId, IServerService service) =>
             {
-                if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
+                if (GuidTest.IsGUID(serverId) is false) return Results.BadRequest("GUID entered is not valid.");
 
                 var server = await service.GetByIdAsync(serverId);
 
                 if (server is null) return Results.NotFound("Server not found");
 
-                var status = await service.CheckServerAvailability(server);
+                var status = service.CheckServerAvailability(server);
 
                 var result = new
                 {
@@ -66,13 +69,14 @@ namespace SeventhSeg.API.APIEndpoints
                 .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("CheckServerAvailability​")
-                .WithTags("Servers");
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Check server availability."));
 
 
             app.MapPost("/api/server", async (ServerDTO server, IServerService service) =>
             {
 
-                if (server == null)
+                if (server is null)
                     return Results.BadRequest("Server not informed.");
 
                 if (!MiniValidator.TryValidate(server, out var errors))
@@ -87,23 +91,47 @@ namespace SeventhSeg.API.APIEndpoints
                 .Produces<ServerDTO>(StatusCodes.Status201Created)
                 .Produces(StatusCodes.Status400BadRequest)
                 .WithName("CreateNewServer")
-                .WithTags("Servers");
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Create a new server."));
+
+            app.MapPut("/api/servers/{serverId}", async (string serverId, ServerDTO server, IServerService service) =>
+            {
+                if (GuidTest.IsGUID(serverId) is false) return Results.BadRequest("GUID entered is not valid.");
+
+                if (server is null)
+                    return Results.BadRequest("Server not informed.");
+
+                if (!MiniValidator.TryValidate(server, out var errors))
+                    return Results.ValidationProblem(errors);
+
+
+                var result = await service.UpdateAsync(serverId, server);
+
+                return result is not null ? Results.NoContent()
+                    : Results.NotFound();
+
+            }).ProducesValidationProblem()
+                .Produces<ServerDTO>(StatusCodes.Status204NoContent)
+                .Produces(StatusCodes.Status400BadRequest)
+                .WithName("UpdateServer")
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Update a server."));
 
             app.MapDelete("/api/servers/{serverId}", async (string serverId, IServerService service) =>
             {
-                if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
+                if (GuidTest.IsGUID(serverId) is false) return Results.BadRequest("GUID entered is not valid.");
 
                 var result = await service.RemoveAsync(serverId);
-                if (result == null) return Results.NotFound();
 
                 return result is not null ? Results.NoContent()
-                    : Results.BadRequest("There was a problem removing the record.");
+                    : Results.NotFound();
 
             }).Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status204NoContent)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("RemoveExistingServer​")
-                .WithTags("Servers");
+                .WithTags("Servers")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Remove a server."));
 
         }
     }

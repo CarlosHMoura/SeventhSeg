@@ -25,7 +25,8 @@ public class RecyclerRepository : IRecyclerRepository
 
     public async Task<Recycler> GetByIdAsync(Guid id)
     {
-        return await _recyclerContext.Recycler.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id);
+        return await _recyclerContext.Recycler.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == id) ?? null!;
     }
 
     public async Task<IEnumerable<Recycler>> GetRecyclerAsync()
@@ -51,12 +52,14 @@ public class RecyclerRepository : IRecyclerRepository
 
     public async Task<Recycler> GetRecyclerRunningAsync()
     {
-        return await _recyclerContext.Recycler.AsNoTracking().SingleOrDefaultAsync(s => s.Status != RecyclerStatusEnum.Finished);
+        return await _recyclerContext.Recycler.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Status != RecyclerStatusEnum.Finished) ?? null!;
     }
 
     public async Task<Recycler> GetRecyclerStatusAsync()
     {
-        return await _recyclerContext.Recycler.OrderByDescending(x => x.CreatedDate).AsNoTracking().FirstOrDefaultAsync();
+        return await _recyclerContext.Recycler.OrderByDescending(x => x.CreatedDate)
+            .AsNoTracking().FirstOrDefaultAsync() ?? null!;
     }
 
 }

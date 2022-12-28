@@ -17,17 +17,17 @@ public class MovieDTO
     [Required(ErrorMessage = "The Description is Required")]
     [MinLength(3)]
     [DisplayName("Description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
 
     [JsonIgnore]
     [MinLength(3)]
     [DisplayName("FileName")]
-    public string FileName { get; set; }
+    public string FileName { get; set; } = null!;
 
     [JsonIgnore]
     [MinLength(3)]
     [DisplayName("PathFile")]
-    public string PathFile { get; set; }
+    public string PathFile { get; set; } = null!;
 
     [Required(ErrorMessage = "The SizeInBytes is Required")]
     [DisplayName("SizeInBytes")]
@@ -35,7 +35,7 @@ public class MovieDTO
 
     [Required(ErrorMessage = "The Binary is Required")]
     [DisplayName("Binary")]
-    public string Binary { get; set; }
+    public string Binary { get; set; } = null!;
 
     [JsonIgnore]
     [DisplayName("ServerId")]

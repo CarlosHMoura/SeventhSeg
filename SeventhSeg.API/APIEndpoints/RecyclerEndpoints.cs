@@ -5,6 +5,7 @@ using SeventhSeg.Application.Common;
 using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
 using SeventhSeg.Domain.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SeventhSeg.API.APIEndpoints
 {
@@ -30,7 +31,8 @@ namespace SeventhSeg.API.APIEndpoints
             }).Produces(StatusCodes.Status200OK)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("StatusRecycleOldVideos")
-                .WithTags("Recycler");
+                .WithTags("Recycler")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Get status recycle old videos"));
 
             app.MapPost("/api/recycler/process/{days}", async (int days, IRecyclerService service) =>
             {
@@ -53,7 +55,8 @@ namespace SeventhSeg.API.APIEndpoints
                 .Produces<RecyclerDTO>(StatusCodes.Status202Accepted)
                 .Produces(StatusCodes.Status400BadRequest)
                 .WithName("RunRecyclingOldMovies")
-                .WithTags("Recycler");
+                .WithTags("Recycler")
+                .WithMetadata(new SwaggerOperationAttribute(summary: "Run recycle old videos"));
         }
     }
 }

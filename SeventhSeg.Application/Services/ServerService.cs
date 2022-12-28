@@ -3,6 +3,7 @@ using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
 using SeventhSeg.Domain.Entities;
 using SeventhSeg.Domain.Interfaces;
+using System;
 using System.Net.Sockets;
 
 namespace SeventhSeg.Application.Services;
@@ -46,21 +47,27 @@ public class ServerService : IServerService
                
         var serverEntity = await _serverRepository.GetByIdAsync(guidId);
 
-        if (serverEntity == null) return null;
+        if (serverEntity is null) return null!;
 
         await _serverRepository.RemoveAsync(serverEntity);
 
         return _mapper.Map<ServerDTO>(serverEntity);
     }
 
-    public async Task<ServerDTO> UpdateAsync(ServerDTO server)
+    public async Task<ServerDTO> UpdateAsync(string id, ServerDTO server)
     {
-        var serverEntity = _mapper.Map<Server>(server);
+        Guid guidId = Guid.Parse(id);
+
+        var serverEntity = await _serverRepository.GetByIdAsync(guidId);
+
+        if (serverEntity is null) return null!;
+
+        serverEntity = _mapper.Map<Server>(server);
         await _serverRepository.UpdateAsync(serverEntity);
         return server;
     }
 
-    public async Task<bool> CheckServerAvailability(ServerDTO server)
+    public bool CheckServerAvailability(ServerDTO server)
     {
         bool result = false;
 

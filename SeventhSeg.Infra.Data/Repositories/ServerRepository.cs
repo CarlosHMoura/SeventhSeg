@@ -23,7 +23,8 @@ public class ServerRepository : IServerRepository
 
     public async Task<Server> GetByIdAsync(Guid id)
     {
-        return await _serverContext.Servers.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id);
+        return await _serverContext.Servers.AsNoTracking()
+            .SingleOrDefaultAsync(s => s.Id == id) ?? null!;
     }
 
     public async Task<IEnumerable<Server>> GetServersAsync()

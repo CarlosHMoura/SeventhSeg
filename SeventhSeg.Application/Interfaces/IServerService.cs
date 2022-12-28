@@ -7,7 +7,7 @@ public interface IServerService
     Task<IEnumerable<ServerDTO>> GetServersAsync();
     Task<ServerDTO> GetByIdAsync(string id);
     Task<ServerDTO> CreateAsync(ServerDTO server);
-    Task<ServerDTO> UpdateAsync(ServerDTO server);
+    Task<ServerDTO> UpdateAsync(string id, ServerDTO server);
     Task<ServerDTO> RemoveAsync(string id);
-    Task<bool> CheckServerAvailability(ServerDTO server);
+    bool CheckServerAvailability(ServerDTO server);
 }

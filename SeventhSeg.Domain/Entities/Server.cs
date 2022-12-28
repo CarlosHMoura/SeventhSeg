@@ -6,10 +6,10 @@ namespace SeventhSeg.Domain.Entities;
 
 public sealed class Server : Entity
 {
-    public string Name { get; private set; }
-    public string Ip { get; private set; }
+    public string Name { get; private set; } = null!;
+    public string Ip { get; private set; } = null!;
     public int Port { get; private set; }
-    public IEnumerable<Movie> Movies { get; }
+    public IEnumerable<Movie> Movies { get; } = null!;
 
     public Server(string name, string ip, int port)
     {

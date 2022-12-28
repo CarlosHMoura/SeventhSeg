@@ -12,7 +12,7 @@ if(!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "MoviesUpload
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opts => opts.EnableAnnotations());
 
 builder.Services.AddHangfire(config =>
 {

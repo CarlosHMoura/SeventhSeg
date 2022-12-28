@@ -24,7 +24,7 @@ public class RecyclerService : IRecyclerService
     {
         var isRunning = await _recyclerRepository.GetRecyclerRunningAsync();
 
-        if (isRunning != null) return null;
+        if (isRunning is not null) return null!;
 
         RecyclerDTO recycler = new RecyclerDTO()
         {
@@ -42,7 +42,7 @@ public class RecyclerService : IRecyclerService
     {
         var recyclerEntity = await _recyclerRepository.GetRecyclerStatusAsync();
 
-        if (recyclerEntity == null) return null;
+        if (recyclerEntity is null) return null!;
 
         return _mapper.Map<RecyclerDTO>(recyclerEntity);
     }
@@ -67,7 +67,7 @@ public class RecyclerService : IRecyclerService
 
         var recyclerEntity = await _recyclerRepository.GetByIdAsync(guidId);
 
-        if (recyclerEntity == null) return null;
+        if (recyclerEntity is null) return null!;
 
         await _recyclerRepository.RemoveAsync(recyclerEntity);
 
@@ -85,7 +85,7 @@ public class RecyclerService : IRecyclerService
     {
         var movies = await _movieService.GetOldMoviesByDaysAsync(recycler.Days);
 
-        if (movies == null) 
+        if (movies is null) 
         {
             recycler.Status = RecyclerStatusEnum.Finished;
 

@@ -22,12 +22,12 @@ public class MovieRepository : IMovieRepository
 
     public async Task<Movie> GetByIdAsync(Guid id)
     {
-        return await _movieContext.Movies.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id);
+        return await _movieContext.Movies.AsNoTracking().SingleOrDefaultAsync(s => s.Id == id) ?? null!;
     }
     public async Task<Movie> GetByIdAsync(Guid serverId, Guid movieId)
     {
         return await _movieContext.Movies.AsNoTracking()
-            .SingleOrDefaultAsync(s => s.ServerId == serverId && s.Id == movieId);
+            .SingleOrDefaultAsync(s => s.ServerId == serverId && s.Id == movieId) ?? null!;
     }
 
     public async Task<IEnumerable<Movie>> GetMoviesAsync()
