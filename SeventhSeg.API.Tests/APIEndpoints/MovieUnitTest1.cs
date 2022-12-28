@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Net;
 using SeventhSeg.Application.DTOs;
 using System;
+using SeventhSeg.API.Tests.Helpers;
 
 namespace SeventhSeg.API.Tests.APIEndpoints;
 
@@ -13,26 +14,11 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
+        var result = await MovieHelpFunctions.CreateNewMovie(application);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
-        var resultMovie = await client.PostAsJsonAsync(urlMovie, movie);
-
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.IsTrue(movieResult.Description == "Video Camera 1");
-        Assert.IsTrue(movieResult.SizeInBytes == 1024);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        Assert.IsTrue(result.Result?.Description == "Video Camera 1");
+        Assert.IsTrue(result.Result?.SizeInBytes == 1024);
     }
 
     [Test]
@@ -40,23 +26,9 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
+        var result = await MovieHelpFunctions.CreateNewMovie(application, true);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
-        var resultMovie = await client.PostAsJsonAsync(urlMovie, movie);
-
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
     [Test]
@@ -64,22 +36,9 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
+        var result = await MovieHelpFunctions.CreateNewMovie(application, false, true);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
-        var resultMovie = await client.PostAsJsonAsync(urlMovie, new { });
-
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
 
     [Test]
@@ -87,31 +46,10 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
+        var result = await MovieHelpFunctions.GetListMovies(application);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
-
-        var resultMovie = await client.PostAsJsonAsync(urlMovie, movie);
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        var resultGetMovie = await client.GetAsync(urlMovie);
-        var movieGetResult = await client.GetFromJsonAsync<IEnumerable<MovieDTO>>(urlMovie);
-
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultGetMovie.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.IsNotNull(serverResult);
-        Assert.IsNotNull(movieResult);
-        Assert.IsNotNull(movieGetResult);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.IsNotNull(result.ResultList);
     }
 
     [Test]
@@ -119,17 +57,13 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
+        await ServerMockData.CreateServers(application, true);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
+        var urlMovie = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos";
 
         var resultGetMovie = await client.GetAsync(urlMovie);
 
@@ -141,33 +75,10 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
+        var result = await MovieHelpFunctions.GetMovieById(application);
 
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovies = $"/api/servers/{serverResult?.Id}/videos";
-
-        var resultMovie = await client.PostAsJsonAsync(urlMovies, movie);
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        var urlMovieById = $"/api/servers/{serverResult?.Id}/videos/{movieResult?.Id}";
-
-        var resultGetMovie = await client.GetAsync(urlMovieById);
-        var movieGetResult = await client.GetFromJsonAsync<MovieDTO>(urlMovieById);
-
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultGetMovie.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.IsNotNull(serverResult);
-        Assert.IsNotNull(movieResult);
-        Assert.IsNotNull(movieGetResult);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.IsNotNull(result.Result);
     }
 
     [Test]
@@ -176,7 +87,7 @@ public class MovieUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-1638-DEADBEEF1638}/videos/{CD2C1638-1638-72D5-1638}";
+        var url = $"/api/servers/{Guid.NewGuid()}/videos/CD2C1638-1638-72D5-1638";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -190,7 +101,7 @@ public class MovieUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-}/videos/{CD2C1638-1638-72D5-1638-DEADBEEF1638}";
+        var url = $"/api/servers/CD2C1638-1638-72D5-/videos/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -203,23 +114,15 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
-
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
-
+        await ServerMockData.CreateServers(application, true);
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
+        
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovieById = $"/api/servers/{serverResult?.Id}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
+        var urlMovieById = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos/{Guid.NewGuid()}";
         var resultMovieById = await client.GetAsync(urlMovieById);
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         Assert.That(resultMovieById.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-        Assert.IsNotNull(serverResult);
     }
 
     [Test]
@@ -227,34 +130,21 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
-
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
+        var movieResult = await MovieHelpFunctions.GetListMovies(application);
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovies = $"/api/servers/{serverResult?.Id}/videos";
-
-        var resultMovie = await client.PostAsJsonAsync(urlMovies, movie);
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        var urlMovieById = $"/api/servers/{serverResult?.Id}/videos/{movieResult?.Id}/binary";
+        var urlMovieById = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos/{movieResult?.ResultList?.First().Id}/binary";
 
         var resultGetMovie = await client.GetAsync(urlMovieById);
         var movieGetResult = await client.GetFromJsonAsync<MovieDTO>(urlMovieById);
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         Assert.That(resultGetMovie.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         Assert.IsNotNull(serverResult);
         Assert.IsNotNull(movieResult);
         Assert.IsNotNull(movieGetResult);
-        Assert.IsTrue(movieGetResult.Binary == movie.Binary);
+        Assert.IsTrue(movieGetResult.Binary is not null);
     }
 
     [Test]
@@ -262,8 +152,7 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-1638-DEADBEEF1638}/videos/{CD2C1638-1638-72D5-1638}/binary";
+        var url = $"/api/servers/{Guid.NewGuid()}/videos/CD2C1638-1638-72D5-1638/binary";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -276,8 +165,7 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-}/videos/{CD2C1638-1638-72D5-1638-DEADBEEF1638}/binary";
+        var url = $"/api/servers/CD2C1638-1638-72D5-/videos/{Guid.NewGuid()}/binary";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -290,20 +178,14 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
+        await ServerMockData.CreateServers(application, true);
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovieById = $"/api/servers/{serverResult?.Id}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
+        var urlMovieById = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
         var resultMovieById = await client.GetAsync(urlMovieById);
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         Assert.That(resultMovieById.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         Assert.IsNotNull(serverResult);
     }
@@ -313,28 +195,17 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        var movie = new MovieDTO { Description = "Video Camera 1", SizeInBytes = 1024, Binary = "iVBORw0KGgoAAAANSUhEUgAAABIAAAAFCAYAAABIHbx0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAbSURBVChTY/iPBdx79AzKIh4wMVAJDFuDGBgAn3lHausb+Q8AAAAASUVORK5CYII=" };
-
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
+        var movieResult = await MovieHelpFunctions.GetListMovies(application);
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlMovie = $"/api/servers/{serverResult?.Id}/videos";
-        var resultMovie = await client.PostAsJsonAsync(urlMovie, movie);
-
-        var movieResult = await resultMovie.Content.ReadFromJsonAsync<MovieDTO>();
-
-        var urlDeleteMovie = $"/api/servers/{serverResult?.Id}/videos/{movieResult?.Id}";
+        var urlDeleteMovie = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos/{movieResult?.ResultList?.First().Id}";
         var resultDelete = await client.DeleteAsync(urlDeleteMovie);
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.That(resultMovie.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         Assert.That(resultDelete.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        Assert.IsNotNull(movieResult);
+        Assert.IsNotNull(serverResult);
     }
 
     [Test]
@@ -342,20 +213,14 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-
-        await ServerMockData.CreateServers(application, false);
-        var urlServer = "/api/server";
+        await ServerMockData.CreateServers(application, true);
+        var serverResult = await ServerHelpFunctions.GetListServer(application);
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlServer, server);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlDeleteMovie = $"/api/servers/{serverResult?.Id}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
+        var urlDeleteMovie = $"/api/servers/{serverResult?.ResultList?.First().Id}/videos/{Guid.NewGuid()}";
         var resultDelete = await client.DeleteAsync(urlDeleteMovie);
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
         Assert.That(resultDelete.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
@@ -364,8 +229,7 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
+        var url = $"/api/servers/CD2C1638-/videos/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
         var result = await client.DeleteAsync(url);
@@ -378,8 +242,7 @@ public class MovieUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/CD2C1638-1638-72D5-1638-DEADBEEF1638/videos/CD2C1638-1DEADBEEF1638";
+        var url = $"/api/servers/{Guid.NewGuid()}/videos/CD2C1638-1DEADBEEF1638";
 
         var client = application.CreateClient();
         var result = await client.DeleteAsync(url);
