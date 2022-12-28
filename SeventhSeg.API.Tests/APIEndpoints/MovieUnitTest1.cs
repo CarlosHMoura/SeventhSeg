@@ -4,7 +4,7 @@ using System.Net;
 using SeventhSeg.Application.DTOs;
 using System;
 
-namespace SeventhSeg.API.Tests;
+namespace SeventhSeg.API.Tests.APIEndpoints;
 
 public class MovieUnitTest1
 {
@@ -65,7 +65,7 @@ public class MovieUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-       
+
         await ServerMockData.CreateServers(application, false);
         var urlServer = "/api/server";
 
@@ -291,7 +291,7 @@ public class MovieUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        
+
         await ServerMockData.CreateServers(application, false);
         var urlServer = "/api/server";
 
@@ -343,7 +343,7 @@ public class MovieUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-        
+
         await ServerMockData.CreateServers(application, false);
         var urlServer = "/api/server";
 
@@ -351,7 +351,7 @@ public class MovieUnitTest1
         var result = await client.PostAsJsonAsync(urlServer, server);
 
         var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-                
+
         var urlDeleteMovie = $"/api/servers/{serverResult?.Id}/videos/CD2C1638-1638-72D5-1638-DEADBEEF1638";
         var resultDelete = await client.DeleteAsync(urlDeleteMovie);
 

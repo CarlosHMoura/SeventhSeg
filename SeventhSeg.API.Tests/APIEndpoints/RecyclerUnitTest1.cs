@@ -4,7 +4,7 @@ using System.Net;
 using SeventhSeg.Application.DTOs;
 using System;
 
-namespace SeventhSeg.API.Tests;
+namespace SeventhSeg.API.Tests.APIEndpoints;
 
 public class RecyclerUnitTest1
 {
@@ -17,7 +17,7 @@ public class RecyclerUnitTest1
         var urlRecycler = "/api/recycler/process/1";
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(urlRecycler, new {});
+        var result = await client.PostAsJsonAsync(urlRecycler, new { });
 
         var urlRecyclerStatus = "/api/recycler/status";
 

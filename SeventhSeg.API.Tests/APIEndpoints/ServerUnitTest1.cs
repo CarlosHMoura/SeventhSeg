@@ -2,8 +2,9 @@
 using System.Net.Http.Json;
 using System.Net;
 using SeventhSeg.Application.DTOs;
+using SeventhSeg.API.Tests.Helpers;
 
-namespace SeventhSeg.API.Tests;
+namespace SeventhSeg.API.Tests.APIEndpoints;
 
 public class ServerUnitTest1
 {
@@ -13,16 +14,12 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers";
 
-        var client = application.CreateClient();
+        var result = await ServerHelpFunctions.GetListServer(application);
 
-        var result = await client.GetAsync(url);
-        var servers = await client.GetFromJsonAsync<IEnumerable<ServerDTO>>(url);
-
-        Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-        Assert.IsNotNull(servers);
-        Assert.IsTrue(servers.Count() == 1);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.IsNotNull(result.ResultList);
+        Assert.IsTrue(result.ResultList.Count() == 1);
     }
 
     [Test]
@@ -31,11 +28,10 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/servers";
 
         var client = application.CreateClient();
 
-        var result = await client.GetAsync(url);
+        var result = await client.GetAsync(ServerHelpFunctions.urlGetServers);
 
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
@@ -46,22 +42,13 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers";
 
-        var client = application.CreateClient();
+        var result = await ServerHelpFunctions.GetServerById(application, null);
 
-        var servers = await client.GetFromJsonAsync<IEnumerable<ServerDTO>>(url);
-
-        var urlId = $"{url}/{servers.First().Id}";
-
-        var result = await client.GetAsync(urlId);
-
-        var server = await client.GetFromJsonAsync<ServerDTO>(urlId);
-
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.IsNotNull(servers);
-        Assert.IsNotNull(server);
-        Assert.IsTrue(server.Port == 80);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.IsNotNull(result.ResultList);
+        Assert.IsNotNull(result.Result);
+        Assert.IsTrue(result.Result.Port == 80);
     }
 
     [Test]
@@ -70,7 +57,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{Ddddd}";
+        var url = $"{ServerHelpFunctions.urlGetServers}/sdafsdf-sasdf";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -84,7 +71,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-1638-DEADBEEF1638}";
+        var url = $"{ServerHelpFunctions.urlGetServers}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -98,13 +85,11 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers";
 
         var client = application.CreateClient();
+        var servers = await client.GetFromJsonAsync<IEnumerable<ServerDTO>>(ServerHelpFunctions.urlGetServers);
 
-        var servers = await client.GetFromJsonAsync<IEnumerable<ServerDTO>>(url);
-
-        var urlId = $"/api/servers/available/{servers.First().Id}";
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/{servers?.First().Id}";
 
         var result = await client.GetAsync(urlId);
 
@@ -121,7 +106,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/available/{CD2C1638-1638-72D5-1638-DEADBEEF1638}";
+        var url = $"{ServerHelpFunctions.urlGetAvailableServer}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -135,7 +120,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/servers/available/{Ddddd}";
+        var url = $"{ServerHelpFunctions.urlGetAvailableServer}/1651651654-sdasf";
 
         var client = application.CreateClient();
         var result = await client.GetAsync(url);
@@ -148,20 +133,14 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/server";
 
-        var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(url, server);
+        var result = await ServerHelpFunctions.CreateNewServer(application);
 
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        Assert.IsTrue(serverResult.Name == "Interno");
-        Assert.IsTrue(serverResult.Ip == "192.168.1.1");
-        Assert.IsTrue(serverResult.Port == 80);
+        Assert.That(result.Status?.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        Assert.IsTrue(result.Result?.Name == "Interno");
+        Assert.IsTrue(result.Result?.Ip == "192.168.1.1");
+        Assert.IsTrue(result.Result?.Port == 80);
     }
 
     [Test]
@@ -172,12 +151,9 @@ public class ServerUnitTest1
         var server = new ServerDTO { Ip = "192.168.1.1", Port = 80 };
 
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/server";
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(url, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
+        var result = await client.PostAsJsonAsync(ServerHelpFunctions.urlCreateServer, server);
 
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
@@ -188,12 +164,9 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/server";
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(url, new {});
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
+        var result = await client.PostAsJsonAsync(ServerHelpFunctions.urlCreateServer, new { });
 
         Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
@@ -203,18 +176,13 @@ public class ServerUnitTest1
     {
         await using var application = new SeventhSegAPIApplication();
 
-        var server = new ServerDTO { Name = "Interno", Ip = "192.168.1.1", Port = 80 };
-
         await ServerMockData.CreateServers(application, false);
-        var url = "/api/server";
+
+        var serverResult = await ServerHelpFunctions.CreateNewServer(application);
+
+        var urlId = $"{ServerHelpFunctions.urlGetServers}/{serverResult.Result?.Id}";
 
         var client = application.CreateClient();
-        var result = await client.PostAsJsonAsync(url, server);
-
-        var serverResult = await result.Content.ReadFromJsonAsync<ServerDTO>();
-
-        var urlId = $"/api/servers/{serverResult?.Id}";
-
         var response = await client.DeleteAsync(urlId);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
@@ -226,7 +194,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-1638-72D5-1638-DEADBEEF1638}";
+        var url = $"{ServerHelpFunctions.urlGetServers}/{Guid.NewGuid()}";
 
         var client = application.CreateClient();
         var result = await client.DeleteAsync(url);
@@ -240,7 +208,7 @@ public class ServerUnitTest1
         await using var application = new SeventhSegAPIApplication();
 
         await ServerMockData.CreateServers(application, true);
-        var url = "/api/servers/{CD2C1638-}";
+        var url = $"{ServerHelpFunctions.urlGetServers}/16516165-sdsd";
 
         var client = application.CreateClient();
         var result = await client.DeleteAsync(url);
