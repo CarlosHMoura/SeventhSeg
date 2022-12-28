@@ -1,4 +1,5 @@
-﻿using MiniValidation;
+﻿using Microsoft.AspNetCore.Mvc;
+using MiniValidation;
 using SeventhSeg.Application.Common;
 using SeventhSeg.Application.DTOs;
 using SeventhSeg.Application.Interfaces;
@@ -14,7 +15,7 @@ namespace SeventhSeg.API.APIEndpoints
             app.MapGet("/api/servers", async (IServerService service) =>
             {
                 var servers = await service.GetServersAsync();
-                if (servers is null)
+                if (servers is null || servers.Count() is 0)
                 {
                     return Results.NotFound("Servers not found");
                 }
@@ -26,10 +27,10 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("ListAllServers")
                 .WithTags("Servers");
 
-            app.MapGet("/api/servers/{serverId}​", async (string serverId, IServerService service) =>
+            app.MapGet("/api/servers/{serverId}", async (string serverId, IServerService service) =>
             {
                 if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
-
+               
                 var server = await service.GetByIdAsync(serverId);
                 if (server is null)
                 {
@@ -44,26 +45,31 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("RecoverExistingServer​")
                 .WithTags("Servers");
 
-            app.MapGet("/api/servers/available/{serverId}​​", async (string serverId, IServerService service) =>
+            app.MapGet("/api/servers/available/{serverId}", async (string serverId, IServerService service) =>
             {
                 if (GuidTest.IsGUID(serverId) == false) return Results.BadRequest("GUID entered is not valid.");
 
-                var server = await service.CheckServerAvailability(serverId);
+                var server = await service.GetByIdAsync(serverId);
+
+                if (server is null) return Results.NotFound("Server not found");
+
+                var status = await service.CheckServerAvailability(server);
 
                 var result = new
                 {
-                    Status = server is true ? "server available" : "server not available"
+                    Status = status is true ? "server available" : "server not available"
                 };
 
                 return Results.Ok(result);
 
             }).Produces<ServerDTO>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status400BadRequest)
                 .Produces(StatusCodes.Status404NotFound)
                 .WithName("CheckServerAvailability​")
                 .WithTags("Servers");
 
 
-            app.MapPost("/api/server​", async (ServerDTO server, IServerService service) =>
+            app.MapPost("/api/server", async (ServerDTO server, IServerService service) =>
             {
 
                 if (server == null)

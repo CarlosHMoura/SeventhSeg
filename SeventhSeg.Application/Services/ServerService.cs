@@ -60,21 +60,15 @@ public class ServerService : IServerService
         return server;
     }
 
-    public async Task<bool> CheckServerAvailability(string serverId)
+    public async Task<bool> CheckServerAvailability(ServerDTO server)
     {
-        Guid guidId = Guid.Parse(serverId);
-
-        var serverEntity = await _serverRepository.GetByIdAsync(guidId);
-
-        if (serverEntity == null) return false;
-
         bool result = false;
 
         using (TcpClient client = new TcpClient())
         {
             try
             {
-                client.Connect(serverEntity.Ip, serverEntity.Port);
+                client.Connect(server.Ip, server.Port);
 
                 result = client.Connected;
 

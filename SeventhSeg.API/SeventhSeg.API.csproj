@@ -17,4 +17,8 @@
     <ProjectReference Include="..\SeventhSeg.Infra.IoC\SeventhSeg.Infra.IoC.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SeventhSeg.API.Tests" />
+  </ItemGroup>
+
 </Project>

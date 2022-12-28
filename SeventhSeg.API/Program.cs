@@ -35,3 +35,5 @@ app.MapMovieEndpoints();
 app.MapRecyclerEndpoints();
 
 app.Run();
+
+public partial class Program { }
