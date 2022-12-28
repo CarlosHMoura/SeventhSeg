@@ -32,7 +32,7 @@ namespace SeventhSeg.API.APIEndpoints
                 .WithName("StatusRecycleOldVideos")
                 .WithTags("Recycler");
 
-            app.MapPost("/api/recycler/process/{days}​​", async (int days, IRecyclerService service) =>
+            app.MapPost("/api/recycler/process/{days}", async (int days, IRecyclerService service) =>
             {
                 if (days <= 0)
                     return Results.BadRequest("Days not informed.");

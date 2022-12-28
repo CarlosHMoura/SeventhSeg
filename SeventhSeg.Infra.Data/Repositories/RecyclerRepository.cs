@@ -51,7 +51,7 @@ public class RecyclerRepository : IRecyclerRepository
 
     public async Task<Recycler> GetRecyclerRunningAsync()
     {
-        return await _recyclerContext.Recycler.AsNoTracking().SingleOrDefaultAsync(s => s.Status == RecyclerStatusEnum.Running);
+        return await _recyclerContext.Recycler.AsNoTracking().SingleOrDefaultAsync(s => s.Status != RecyclerStatusEnum.Finished);
     }
 
     public async Task<Recycler> GetRecyclerStatusAsync()
