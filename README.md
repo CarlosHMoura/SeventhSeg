@@ -105,15 +105,11 @@ A prova técnica de desenvolvimento _back-end_ é focada na construção de uma 
  ##### **Exemplos de conteúdo Json (application/json):**
  1.  Servidor​
     
-	    - `{ "id": "{00A077F6-6ACF-41AF-942A-501BE8FB80F8}", "name":​`
-        
-	    - `"Servidor 1", "ip": "127.0.0.1", "port": 8080 }​`
+	    - `{ "id": "{00A077F6-6ACF-41AF-942A-501BE8FB80F8}", "name":"Servidor 1", "ip": "127.0.0.1", "port": 8080 }​`
         
 2.  Vídeo (informações básicas)​
     
-	  - `{ "id": "{11A077F6-6ACF-41AF-942A-501BE8FB80B8}", "description":​`
-        
-    - `"Vídeo 1", "sizeInBytes": 291923 }​`
+	  - `{ "id": "{11A077F6-6ACF-41AF-942A-501BE8FB80B8}", "description":"Vídeo 1", "sizeInBytes": 291923 }​`
         
 3.  Reciclagem (status de processamento)​
     
